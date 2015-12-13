@@ -28,7 +28,28 @@ def Find_cytoband(chromosome,band):
 
 	print(chromosome + "\t" + str(startpos) + "\t" + str(endpos));
 
+def return_cytoband(chromosome,pos):
+	#open the config file to retrieve the cytoband file
+	with open('config', 'r') as config:
+		infile=config.readline();
+	configInput=infile.split("=");
+	infile=configInput[1];
+	infile=infile.splitlines();
+	infile=infile[0];
 
+        found=0
+	for line in open(infile):
+		content=line.split("\t");
+		#searches for the given chromosome
+		if(chromosome == content[0]):
+                        if(float(content[1]) <= float(pos)):
+                                if(float(content[2]) >= float(pos)):
+                                        cytoband=content[3];
+                                        found=True
+        if(found == True):
+                print(cytoband);
+        else:
+                print("ERR404")
 
 #if the cytoband is given in the form chrZan, a=arm=p,q
 if(len(sys.argv) == 2):
@@ -55,8 +76,11 @@ if(len(sys.argv) == 2):
 #if the cytoband is given in the form chrZ an or Z an, a =arm=p,q
 elif(len(sys.argv) ==3):
 	#if the input i given at the format chrZ an, a =arm=p,q
-	if(sys.argv[1][0:3] =="chr"):
+	if(sys.argv[1][0:3] =="chr" and not sys.argv[2].isdigit()):
 		Find_cytoband(sys.argv[1],sys.argv[2]);
+        elif(sys.argv[2].isdigit()):
+                return_cytoband(sys.argv[1],sys.argv[2]);
 	else:
 		Find_cytoband("chr"+sys.argv[1],sys.argv[2]);
-
+        #the input is a position, return the cytoband
+        
